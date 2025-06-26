@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FableScrolls | Magical API</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Uncial Antiqua', cursive;
+      background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #f0e130;
+      text-shadow: 0 0 10px #f0e130, 0 0 20px #c087f7;
+    }
+
+    p {
+      color: #ccc;
+      margin-bottom: 2rem;
+    }
+
+    .scrolls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .scroll-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #c087f7;
+      padding: 1rem 2rem;
+      color: #fff;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 0 15px rgba(192, 135, 247, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .scroll-button:hover {
+      background: #c087f7;
+      color: #000;
+      transform: scale(1.05);
+    }
+
+    footer {
+      margin-top: 3rem;
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    #loading {
+      margin-top: 2rem;
+      color: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📜 FableScrolls API</h1>
+  <p>Unveil the hidden scrolls stored in this magical repository.</p>
+
+  <div class="scrolls" id="scrollList"></div>
+  <div id="loading">🔍 Summoning scrolls...</div>
+
+  <footer>
+    <p>🪄 Crafted by Code Sorcerer | Powered by GitHub API</p>
+  </footer>
+
+  <script>
+    const username = "khrizve"; // 👈 Replace with your GitHub username
+    const repo = "Fablescrolls-Content"; // 👈 Replace with your repo name
+    const scrollList = document.getElementById("scrollList");
+    const loading = document.getElementById("loading");
+
+    async function fetchJSONFiles(path = "") {
+      const apiURL = `https://api.github.com/repos/${username}/${repo}/contents/${path}`;
+      const res = await fetch(apiURL);
+      const data = await res.json();
+
+      for (const item of data) {
+        if (item.type === "file" && item.name.endsWith(".json")) {
+          createScroll(item.path);
+        } else if (item.type === "dir") {
+          await fetchJSONFiles(item.path); // 🔁 Recursive for folders
+        }
+      }
+
+      loading.style.display = "none";
+    }
+
+    function createScroll(filePath) {
+      const rawURL = `https://${username}.github.io/${repo}/${filePath}`;
+      const label = filePath.replace('.json', '').replace(/[-_]/g, ' ').replace(/\//g, ' ⟶ ');
+      const a = document.createElement("a");
+      a.href = rawURL;
+      a.target = "_blank";
+      a.className = "scroll-button";
+      a.innerText = `🧾 ${label}`;
+      scrollList.appendChild(a);
+    }
+
+    fetchJSONFiles();
+  </script>
+</body>
+</html>
